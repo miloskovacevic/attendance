@@ -1,11 +1,11 @@
-myApp.controller('RegistrationController', function($scope, $location){
+myApp.controller('RegistrationController', function($scope, $location, Authentication){
 
 	$scope.login = function(){
-		
-		$location.path('/meetings');
-	}
+		Authentication.login($scope.user);
+	};
 
 	$scope.register = function(){
 		$location.path('/meetings');
 	}
 });
+
