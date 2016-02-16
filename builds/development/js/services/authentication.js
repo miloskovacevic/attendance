@@ -1,22 +1,50 @@
-myApp.factory('Authentication', function($firebase, FIREBASE_URL, $location){
+myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', '$firebaseObject', '$location', 'FIREBASE_URL', function($rootScope, $firebaseAuth, $firebaseObject, $location, FIREBASE_URL){
+
+	$rootScope.currentUser = '';
 
 	var ref = new Firebase(FIREBASE_URL);
+	var auth = $firebaseAuth(ref);
+	var offAuth;
+
+	var onAuthCallback = function(authUser){
+		if(authUser){
+			var userRef = new Firebase(FIREBASE_URL + 'users/' + authUser.id);
+			console.log('Ovog usera trazimo: ' + userRef);
+			var userObj = $firebaseObject(userRef);
+			$rootScope.currentUser = userObj;
+		}else {
+			console.log('client unauthenticated!');
+			$rootScope.currentUser = '';
+		}
+	}
+
+	auth.$onAuth(onAuthCallback);
 
 	var myObject = {
+
 		login: function(user){
-			return ref.authWithPassword({
+			auth.$authWithPassword({
 				email: user.email,
 				password: user.password
-			}, function(err, data){
-				if(err){
-					console.log('Error: ' + err);
-				} else {
-					console.log('Logged in: ' + data);
-					$location.path('/meetings');
-				}
+			}).then(function(regUser){
+				console.log('Nakon logina: ' + regUser);
+				$location.path('/meetings');
+			}).catch(function(err){
+				$rootScope.message = err.message;
+				console.log(err.message);
 			});
-		}//login
-	};//object
+
+		},
+
+		register: function(user){
+			return auth.$createUser({email: user.email, password: user.password});
+		},  //register
+
+
+		logout: function(){
+			return auth.$unauth();
+		}// logout
+	};
 
 	return myObject;
-});
+}]);

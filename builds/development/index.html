@@ -24,13 +24,13 @@
 </head>
 <body>
 <header>
-  <nav class="cf" ng-include="'views/nav.html'"></nav>
+  <nav class="cf" ng-include="'views/nav.html'" ng-controller="RegistrationController"></nav>
 </header>
 <div class="page">
 
-  <div class="userinfo" ng-controller="StatusController" ng-show="userEmail">
-    <span class="user">Hi {{userEmail}}</span>
-    <a href="#">Logout</a>
+  <div class="userinfo" ng-controller="RegistrationController" ng-show="currentUser">
+    <span class="user">Hi {{currentUser}}</span>
+    <a href="#" ng-click="logout()">Logout</a>
   </div>
   <main class="cf" ng-view >
 

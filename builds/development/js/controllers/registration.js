@@ -5,7 +5,18 @@ myApp.controller('RegistrationController', function($scope, $location, Authentic
 	};
 
 	$scope.register = function(){
-		$location.path('/meetings');
+		Authentication.register($scope.user)
+		.then(function(user){
+			Authentication.login($scope.user);
+			$location.path('/meetings');
+		}, function(err){
+			$scope.message = err.toString();
+		});
+	}
+
+	$scope.logout = function(){
+		Authentication.logout();
+		$location.path('/login');
 	}
 });
 
