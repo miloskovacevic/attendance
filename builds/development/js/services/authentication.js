@@ -1,4 +1,4 @@
-myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', '$firebaseObject', '$location', 'FIREBASE_URL', function($rootScope, $firebaseAuth, $firebaseObject, $location, FIREBASE_URL){
+myApp.factory('Authentication', ['$rootScope', '$firebase', '$firebaseAuth', '$firebaseObject', '$location', 'FIREBASE_URL', function($rootScope, $firebase,  $firebaseAuth, $firebaseObject, $location, FIREBASE_URL){
 
 	$rootScope.currentUser = '';
 
@@ -8,7 +8,7 @@ myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', '$firebaseObject
 
 	var onAuthCallback = function(authUser){
 		if(authUser){
-			var userRef = new Firebase(FIREBASE_URL + 'users/' + authUser.id);
+			var userRef = new Firebase(FIREBASE_URL + '/users/' + authUser.uid);
 			console.log('Ovog usera trazimo: ' + userRef);
 			var userObj = $firebaseObject(userRef);
 			$rootScope.currentUser = userObj;
@@ -23,11 +23,17 @@ myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', '$firebaseObject
 	var myObject = {
 
 		login: function(user){
+
+			//mozda ti ovo i ne treba...
+			var userRef = new Firebase(FIREBASE_URL + '/users/' + user.uid);
+			var userObject = $firebaseObject(userRef);
+			$rootScope.currentUser = userObject;
+
 			auth.$authWithPassword({
 				email: user.email,
 				password: user.password
 			}).then(function(regUser){
-				console.log('Nakon logina: ' + regUser);
+				console.log(regUser);
 				$location.path('/meetings');
 			}).catch(function(err){
 				$rootScope.message = err.message;
@@ -37,13 +43,28 @@ myApp.factory('Authentication', ['$rootScope', '$firebaseAuth', '$firebaseObject
 		},
 
 		register: function(user){
-			return auth.$createUser({email: user.email, password: user.password});
+			return auth.$createUser({email: user.email, password: user.password})
+			.then(function(regUser){
+
+				var ref = new Firebase(FIREBASE_URL + 'users' )  //chaining 
+				.child(regUser.uid).set({
+          			date: Firebase.ServerValue.TIMESTAMP,
+          			regUser: regUser.uid,
+          			firstname: user.firstname,
+          			lastname: user.lastname,
+          			email:  user.email
+        		}); //user info
+			}); // add user
 		},  //register
 
 
 		logout: function(){
 			return auth.$unauth();
-		}// logout
+		},// logout
+
+		requireAuth: function(){
+			return auth.$requireAuth();
+		}
 	};
 
 	return myObject;

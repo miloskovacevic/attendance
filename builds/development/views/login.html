@@ -1,7 +1,15 @@
 <section class="login">
+
+	<div ng-show="currentUser">
+		<p>You are already logged in!</p>
+		<p>First Name: {{currentUser.firstname}}</p>
+		<p>Last Name: {{currentUser.lastname}}</p>
+	</div>
+
 	<form name="myform" 
 	ng-submit="login()"
-	novalidate>
+	novalidate 
+	ng-hide="currentUser">
 
 		<h1>Hi there</h1>
 		<p>Log-in to access the awesomness!</p>

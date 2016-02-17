@@ -1,17 +1,26 @@
 <section class="meetings cf">
-	<h1>Add Meetings</h1>
-	<form class="formgroup addmeeting cf" name="myform" ng-submit="addMeeting()" novalidate>
-		<div class="inputwrapper">
-			<input type="text" name="meetingname" placeholder="Meeting Name" ng-model="meetingname">
+
+	<div ng-hide="currentUser" class="sorry">
+		<h1>Sorry</h1>
+		<p>Only registered users can create and manage meetings</p>
+		<p>Please <a ng-href="#/login">Login</a> or <a ng-href="#/register">Register</a></p>
+	</div>
+
+	<div ng-show="currentUser" class="displaymeetings">
+
+		<h1>Add Meetings</h1>
+		<form class="formgroup addmeeting cf" name="myform" ng-submit="addMeeting()" novalidate>
+			<div class="inputwrapper">
+				<input type="text" name="meetingname" placeholder="Meeting Name" ng-model="meetingname">
+			</div>
+			<button type="submit" class="btn" ng-disabled="myform.$invalid">Send</button>
+		</form>
+		<h2 ng-if="howManyMeetings > 0">Your Meetings</h2>
+		<div class="meeting" ng-repeat="(key, meeting) in meetingsInfo">
+			<button class="btn btn-delete tooltip" ng-click="removeMeeting(key)"><span>Delete this meeting</span></button>
+			<span class="text">{{meeting.name}}</span>
 		</div>
-		<button type="submit" class="btn" ng-disabled="myform.$invalid">Send</button>
-
-	</form>
-
-	<h2>Your Meetings</h2>
-	<div class="meeting" ng-repeat="(key, meeting) in meetings">
-		<button class="btn btn-delete tooltip" ng-click="removeMeeting(key)"><span>Delete this meeting</span></button>
-		<span class="text">{{meeting.name}}</span>
+		
 	</div>
 </section>
 

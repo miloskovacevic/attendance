@@ -1,7 +1,14 @@
 <section class="register">
+	<div ng-show="currentUser">
+		<p>You are already registered!</p>
+		<p>First Name: {{currentUser.firstname}}</p>
+		<p>Last Name: {{currentUser.lastname}}</p>
+	</div>
+
 	<form name="myform" 
 	ng-submit="register()"
-	novalidate>
+	novalidate
+	ng-hide="currentUser">
 
 		<h1>Register</h1>
 		<p>Register to access the awesomness!</p>

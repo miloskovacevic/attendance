@@ -1,22 +1,41 @@
-myApp.controller('MeetingsController', ['$scope', '$firebaseArray', function($scope, $firebaseArray){
-	var ref = new Firebase('https://attendance-crni.firebaseio.com/meetings');
-    var meetings = $firebaseArray(ref);
+myApp.controller('MeetingsController', ['$scope', '$rootScope', '$firebaseAuth', '$firebaseArray', 'FIREBASE_URL', function($scope, $rootScope, $firebaseAuth, $firebaseArray, FIREBASE_URL){
+	
+    var ref = new Firebase(FIREBASE_URL);
+    var auth = $firebaseAuth(ref);
 
-    $scope.meetings = meetings;
+    auth.$onAuth(function(authUser){
+        if(authUser){
+            var ref = new Firebase(FIREBASE_URL + 'users/' + authUser.uid + '/meetings/');
+            var meetingsInfo = $firebaseArray(ref);
 
-    $scope.addMeeting = function(){
-    	meetings.$add({
-    		name: $scope.meetingname,
-    		date: Firebase.ServerValue.TIMESTAMP
-    	}).then(function(){
-    		$scope.meetingname = '';
-    	});
-    }
+            // console.log('Meetings object : ' + meetingsInfoObject);
 
-    $scope.removeMeeting = function(key){
-    	console.log('Rmoving meeting...');
-    	meetings.$remove(key);
-    }
+            $scope.meetingsInfo = meetingsInfo;
+
+            //after data is loaded count number of meetings...
+            meetingsInfo.$loaded().then(function(data) {
+              $rootScope.howManyMeetings = meetingsInfo.length;
+            }); 
+
+            meetingsInfo.$watch(function(data) {
+              $rootScope.howManyMeetings = meetingsInfo.length;
+            });
+
+            $scope.addMeeting = function(){
+                meetingsInfo.$add({
+                    name: $scope.meetingname,
+                    date: Firebase.ServerValue.TIMESTAMP
+                }).then(function(){
+                    $scope.meetingname = '';
+                });
+            }
+
+            $scope.removeMeeting = function(key){
+                console.log('Rmoving meeting...');
+                meetingsInfo.$remove(key);
+            }
+        }
+    });
 }]);
 
 

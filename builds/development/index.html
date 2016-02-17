@@ -29,7 +29,7 @@
 <div class="page">
 
   <div class="userinfo" ng-controller="RegistrationController" ng-show="currentUser">
-    <span class="user">Hi {{currentUser}}</span>
+    <span class="user">Hi {{currentUser.firstname}}</span>
     <a href="#" ng-click="logout()">Logout</a>
   </div>
   <main class="cf" ng-view >
